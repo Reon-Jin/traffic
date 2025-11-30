@@ -11,7 +11,7 @@
 | 焦祺灏 | 模型设计 | ViT结构优化 |
 | 谭清舟 | 模型训练 | 模型训练与调参 |
 | 李泽京 | 模型评估 | 设计损失函数与图表绘制 |
-| E | 报告撰写 | 汇总成果并撰写报告 |
+| 赵俣鑫 | 报告撰写 | 汇总成果并撰写报告 |
 ## 预处理数据说明（preprocessed_data）
 
 下面列出 `preprocessed_data/CHI` 和 `preprocessed_data/NYC` 下的所有 `.npy` 文件、它们的 shape、dtype 以及简要用途（用于训练脚本）。
