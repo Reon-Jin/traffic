@@ -17,7 +17,7 @@
 下面列出 `preprocessed_data/CHI` 和 `preprocessed_data/NYC` 下的所有 `.npy` 文件、它们的 shape、dtype 以及简要用途（用于训练脚本）。
 
 ### CHI
-- `new_grid_data_c_4d.npy` — shape=(8784, 7, 10, 10), dtype=float32：时空格点数据张量 (T, D, H, W)。T=时间步数（8784），D=通道数（7，包含目标标签`risk_label`,流量信息`inflow`和`outflow`，天气信息`precipitation`、`weather_code`和`wind_speed_10m`。训练时会通过`dataloader.py`文件将7维降为6维，并将相邻一段时期的数据合并为一个样本用于输入模型），H/W=网格高宽（10×10）。训练时作为动态输入 `all_data_c` 使用，按窗口切片生成样本。
+- `new_grid_data_c_4d.npy` — shape=(8784, 7, 10, 10), dtype=float32：时空格点数据张量 (T, D, H, W)。T=时间步数（8784），D=通道数（7，包含目标标签`risk_label`,流量信息`inflow`和`outflow`，天气信息`precipitation`、`weather_code`和`wind_speed_10m`。训练时会通过`dataloader.py`文件将7维降为4维，并将相邻一段时期的数据合并为一个样本用于输入模型），H/W=网格高宽（10×10）。训练时作为动态输入 `all_data_c` 使用，按窗口切片生成样本。
 - `new_grid_data_f_4d.npy` — shape=(8784, 7, 10, 10), dtype=float32：与上类似，为另一通道集合 `all_data_f`。
 - `new_grid_node_map_c.npy` — shape=(100, 63), dtype=int64：网格到有效节点的映射矩阵，行数=H*W=100，列数=valid_node_count=63。用于生成有效节点 mask 和从格点映射到节点索引。
 - `new_grid_node_map_f.npy` — shape=(100, 63), dtype=int64：对应 `f` 通道的映射矩阵。
