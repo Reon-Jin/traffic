@@ -19,8 +19,8 @@ from sklearn.metrics import f1_score, accuracy_score, roc_auc_score, average_pre
 curPath = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(curPath)
 
-from Mymodel.Vit import ST_ViT
-from Mymodel import dataloader
+from Vit import ST_ViT
+import dataloader
 
 import logging
 import datetime
@@ -355,13 +355,8 @@ class TimeSeriesDataset(Dataset):
 
 
 # 加载数据
-<<<<<<< HEAD
-data_path = os.path.join(os.path.split(curPath)[0], "data",'npy_new_nodiff')
-#时空数据：（T,D,H,W）
-=======
 data_path = os.path.join(os.path.split(curPath)[0], "data", 'npy_new_nodiff')
 # 时空数据：（T,D,H,W）
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
 all_data_c_path = os.path.join(data_path, 'new_grid_data_c_4d.npy')
 all_data_f_path = os.path.join(data_path, 'new_grid_data_f_4d.npy')
 
@@ -474,10 +469,7 @@ timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 model_name = model.__class__.__name__
 logging.info(f"Model Name: {model_name}\n")
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
 def weighted_mse_loss(pred, target, alpha=5.0, beta=2.0):
     """
     改进的加权MSE损失函数，更好地处理类别不平衡
@@ -489,19 +481,6 @@ def weighted_mse_loss(pred, target, alpha=5.0, beta=2.0):
     """
     # 计算平方差
     squared_error = (pred - target) ** 2
-<<<<<<< HEAD
-    
-    # 计算预测概率（使用sigmoid将预测值映射到[0,1]）
-    pred_prob = torch.sigmoid(pred)
-    
-    # 对于正样本（target==1），计算focal weight
-    # 如果预测概率低，说明是难分类样本，给予更高权重
-    focal_weight_positive = (1 - pred_prob) ** beta
-    
-    # 对于负样本（target==0），如果预测概率高，说明是难分类样本
-    focal_weight_negative = pred_prob ** beta
-    
-=======
 
     # 计算预测概率（使用sigmoid将预测值映射到[0,1]）
     pred_prob = torch.sigmoid(pred)
@@ -513,57 +492,19 @@ def weighted_mse_loss(pred, target, alpha=5.0, beta=2.0):
     # 对于负样本（target==0），如果预测概率高，说明是难分类样本
     focal_weight_negative = pred_prob ** beta
 
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
     # 生成权重矩阵
     # 正样本：alpha * focal_weight（难分类的正样本权重更高）
     # 负样本：1.0 * focal_weight（难分类的负样本权重更高）
     weights = torch.where(
-<<<<<<< HEAD
-        target == 1, 
-        alpha * focal_weight_positive, 
-        1.0 * focal_weight_negative
-    )
-    
-=======
         target == 1,
         alpha * focal_weight_positive,
         1.0 * focal_weight_negative
     )
 
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
     # 计算加权损失并取均值
     weighted_loss = (squared_error * weights).mean()
 
     return weighted_loss
-
-def focal_mse_loss(pred, target, alpha=5.0, gamma=2.0):
-    """
-    Focal Loss风格的MSE损失，专注于难分类样本
-    Args:
-        pred: 预测值
-        target: 目标值（0或1）
-        alpha: 类别权重平衡参数
-        gamma: 聚焦参数
-    """
-    # 将预测值映射到[0,1]
-    pred_prob = torch.sigmoid(pred)
-    
-    # 计算基础MSE
-    mse = (pred - target) ** 2
-    
-    # 计算focal weight
-    # 对于正样本：如果预测概率低，给予更高权重
-    # 对于负样本：如果预测概率高，给予更高权重
-    p_t = torch.where(target == 1, pred_prob, 1 - pred_prob)
-    focal_weight = (1 - p_t) ** gamma
-    
-    # 类别权重
-    alpha_t = torch.where(target == 1, alpha, 1.0)
-    
-    # 计算最终损失
-    loss = alpha_t * focal_weight * mse
-    
-    return loss.mean()
 
 
 def focal_mse_loss(pred, target, alpha=5.0, gamma=2.0):
@@ -610,15 +551,6 @@ scheduler_c = StepLR(optimizer_c, step_size=1, gamma=0.95)  # 每1个epoch衰减
 
 
 import time
-<<<<<<< HEAD
-# 训练循环
-for epoch in range(num_epochs):
-    model.train()
-    t1=time.time()
-    for batch in train_loader:
-        # 获取数据
-        X_c, y_c, X_f, y_f, node_X_c, node_X_f,target_time_feature = batch
-=======
 
 # 训练循环
 for epoch in range(num_epochs):
@@ -627,40 +559,17 @@ for epoch in range(num_epochs):
     for batch in train_loader:
         # 获取数据
         X_c, y_c, X_f, y_f, node_X_c, node_X_f, target_time_feature = batch
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
         # 将数据移动到设备(GPU)上
         X_c = X_c.to(device)
         y_c = y_c.to(device)
         target_time_feature = target_time_feature.to(device)
         # 前向传播
         c_pred = model(X_c)
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
         # 将c_pred和y_c从(S, label, H, W)映射为(S, label, node)
         c_pred_mapped = torch.matmul(c_pred.view(c_pred.shape[0], c_pred.shape[1], -1), grid_node_map_c)
         y_c_mapped = torch.matmul(y_c.view(y_c.shape[0], y_c.shape[1], -1), grid_node_map_c)
-        
-        # 计算预测损失（使用改进的加权MSE损失）
-        loss_c = weighted_mse_loss(c_pred_mapped, y_c_mapped, alpha=10.0, beta=2.0)
 
-<<<<<<< HEAD
-        # loss = loss_f +  loss_c
-        # 清零所有梯度
-        optimizer_c.zero_grad()
-        
-        # 计算的梯度
-        loss_c.backward()
-        
-        # 再统一更新参数
-        optimizer_c.step()
-
-    scheduler_c.step()
-    t2=time.time()
-    print(t2-t1)
-=======
         # 计算预测损失（使用改进的加权MSE损失）
         loss_c = weighted_mse_loss(c_pred_mapped, y_c_mapped, alpha=10.0, beta=2.0)
 
@@ -677,7 +586,6 @@ for epoch in range(num_epochs):
     scheduler_c.step()
     t2 = time.time()
     print(t2 - t1)
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
     # 在验证集上评估模型
     model.eval()
     with torch.no_grad():
@@ -685,11 +593,7 @@ for epoch in range(num_epochs):
         for batch in val_loader:
             # X_c, y_c, X_f, y_f, node_X_c, node_X_f, target_time_feature = batch
             # 获取数据
-<<<<<<< HEAD
-            X_c, y_c, X_f, y_f, node_X_c, node_X_f,target_time_feature = batch
-=======
             X_c, y_c, X_f, y_f, node_X_c, node_X_f, target_time_feature = batch
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
             # 将数据移动到设备(GPU)上
             X_c = X_c.to(device)
             y_c = y_c.to(device)
@@ -699,21 +603,6 @@ for epoch in range(num_epochs):
 
             c_pred_mapped = torch.matmul(c_pred.view(c_pred.shape[0], c_pred.shape[1], -1), grid_node_map_c)
             y_c_mapped = torch.matmul(y_c.view(y_c.shape[0], y_c.shape[1], -1), grid_node_map_c)
-<<<<<<< HEAD
-        
-            loss_c = criterion_c(c_pred_mapped, y_c_mapped)
-            
-
-            loss = loss_c 
-            
-            val_loss_c += loss_c.item()
-
-        
-        
-        val_loss_c /= len(val_loader)
-        val_loss =val_loss_c
-        logging.info(f"Epoch [{epoch+1}/{num_epochs}]")
-=======
 
             loss_c = criterion_c(c_pred_mapped, y_c_mapped)
 
@@ -724,36 +613,22 @@ for epoch in range(num_epochs):
         val_loss_c /= len(val_loader)
         val_loss = val_loss_c
         logging.info(f"Epoch [{epoch + 1}/{num_epochs}]")
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
         logging.info(f"learning rate_c: {optimizer_c.param_groups[0]['lr']:.6f}")
         logging.info(f"Train Loss: {loss.item():.4f}, Val Loss: {val_loss:.4f}")
         logging.info(f"Loss_c: {val_loss_c:.4f}")
 
     # 在测试集上评估模型
-<<<<<<< HEAD
-    t3=time.time()
-    print(t3-t2)
-=======
     t3 = time.time()
     print(t3 - t2)
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
     model.eval()
     with torch.no_grad():
         all_c_preds = []
         all_y_c = []
-<<<<<<< HEAD
-        T1=time.time()
-        # print("STGCN Pre",T2-T1)
-        for batch in test_loader:
-            # 获取数据
-            X_c, y_c, X_f, y_f, node_X_c, node_X_f,target_time_feature = batch
-=======
         T1 = time.time()
         # print("STGCN Pre",T2-T1)
         for batch in test_loader:
             # 获取数据
             X_c, y_c, X_f, y_f, node_X_c, node_X_f, target_time_feature = batch
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
             # 将数据移动到设备(GPU)上
             X_c = X_c.to(device)
             y_c = y_c.to(device)
@@ -762,38 +637,21 @@ for epoch in range(num_epochs):
             target_time_feature = target_time_feature.to(device)
             # 前向传播
             c_pred = model(X_c)
-<<<<<<< HEAD
-            
-            # 维度处理 (batch_size, seq_len, H, W) -> (batch_size*seq_len, H*W)
-            batch_size, seq_len = c_pred.shape[0], c_pred.shape[1]
-            
-            
-=======
 
             # 维度处理 (batch_size, seq_len, H, W) -> (batch_size*seq_len, H*W)
             batch_size, seq_len = c_pred.shape[0], c_pred.shape[1]
 
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
             # 粗粒度预测映射
             c_pred_flat = c_pred.view(batch_size * seq_len, -1)
             y_c_flat = y_c.view(batch_size * seq_len, -1)
             c_pred_mapped = torch.matmul(c_pred_flat, grid_node_map_c)
             y_c_mapped = torch.matmul(y_c_flat, grid_node_map_c)
-<<<<<<< HEAD
-            
-            # 收集结果
-            all_c_preds.append(c_pred_mapped)
-            all_y_c.append(y_c_mapped)
-        T2=time.time()
-        print("VIT Pre",T2-T1)
-=======
 
             # 收集结果
             all_c_preds.append(c_pred_mapped)
             all_y_c.append(y_c_mapped)
         T2 = time.time()
         print("VIT Pre", T2 - T1)
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
         # 合并所有结果
         # (total_samples, nodes)
         c_preds = torch.cat(all_c_preds, dim=0)
@@ -802,11 +660,7 @@ for epoch in range(num_epochs):
         # 计算 MSE（RMSE）
         MSE_C = calculate_rmse(c_preds, y_c)
 
-<<<<<<< HEAD
-        #calculate_dynamic_map
-=======
         # calculate_dynamic_map
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
         MAP_C = calculate_dynamic_map(c_preds, y_c)
         ACC_CL = calculate_acc_at_dynamic_L(c_preds, y_c)
 
@@ -817,15 +671,8 @@ for epoch in range(num_epochs):
         AUC_PR_C = metrics_C["AUC-PR"]
         AUC_ROC_C = metrics_C["AUC-ROC"]
         Precision_C = metrics_C["Precision"]  # 新增
-<<<<<<< HEAD
-        Recall_C = metrics_C["Recall"]        # 新增
-
-
-
-=======
         Recall_C = metrics_C["Recall"]  # 新增
 
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
         # 修改日志输出
         logging.info(f"RMSE(C): {MSE_C:.4f}")
         logging.info(f"MAP(C): {MAP_C:.4f} ")
@@ -833,43 +680,26 @@ for epoch in range(num_epochs):
         logging.info(f"F1 Score(C): {F1_C:.4f}")
         logging.info(f"Accuracy(C): {ACC_C:.4f}")
         logging.info(f"Recall(C): {Recall_C:.4f}")
-<<<<<<< HEAD
-        logging.info(f"Precision(C): {Precision_C:.4f}") 
-=======
         logging.info(f"Precision(C): {Precision_C:.4f}")
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
         logging.info(f"AUC-PR(C): {AUC_PR_C:.4f}")
         logging.info(f"AUC-ROC(C): {AUC_ROC_C:.4f}")
         logging.info("")  # 添加空行保持原格式
 
     # 在epoch结束后保存权重
-<<<<<<< HEAD
-    t4=time.time()
-    print(t4-t3)
-    save_dir = "saved_models/"+str(timestamp)
-    os.makedirs(save_dir, exist_ok=True)
-
-    checkpoint_path = os.path.join(save_dir, f"{model_name}_epoch_{epoch+1}.pth")
-=======
     t4 = time.time()
     print(t4 - t3)
     save_dir = "saved_models/" + str(timestamp)
     os.makedirs(save_dir, exist_ok=True)
 
     checkpoint_path = os.path.join(save_dir, f"{model_name}_epoch_{epoch + 1}.pth")
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
 
     torch.save({
-        'epoch': epoch+1,
+        'epoch': epoch + 1,
         'model_state_dict': model.state_dict(),
         'optimizer_c_state_dict': optimizer_c.state_dict(),
         'scheduler_c_state_dict': scheduler_c.state_dict(),
         'loss': loss.item()
     }, checkpoint_path)
 
-<<<<<<< HEAD
-    print(f"Saved epoch {epoch+1}")
-=======
     print(f"Saved epoch {epoch + 1}")
->>>>>>> 605e5267bf5849a57deebf177c3097caa75db93e
 
