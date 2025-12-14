@@ -17,7 +17,7 @@ from sklearn.metrics import f1_score, accuracy_score, roc_auc_score, average_pre
 #修改环境变量，添加项目目录，方便不同路径的脚本模块调用
 curPath = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(curPath)
-
+#1
 from Mymodel.Vit import ST_ViT
 from Mymodel import dataloader
 
