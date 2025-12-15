@@ -613,7 +613,7 @@ for epoch in range(num_epochs):
         'scheduler_c_state_dict': scheduler_c.state_dict(),
         'loss': train_loss_c
     }, checkpoint_path)
-
+# 1
     print(f"💾 Saved model checkpoint: {checkpoint_path}")
 
 
