@@ -694,4 +694,3 @@ for epoch in range(num_epochs):
     }, checkpoint_path)
 
     print(f"Saved epoch {epoch+1}")
-
